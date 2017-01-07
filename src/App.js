@@ -1,20 +1,28 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
+import CohortSelect from './CohortSelect'
 
 class App extends Component {
+  constructor() {
+    super()
+    this.state = { cohort: '' }
+  }
+
+  startGame(cohort) {
+    console.log("Starting game! " + cohort)
+    this.setState({cohort: cohort})
+  }
+
   render() {
-    return (
-      <div className="App">
-        <div className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h2>Welcome to React</h2>
+    if (this.state.cohort === '') {
+      return (
+        <div className="App">
+          <CohortSelect startGame={this.startGame.bind(this)}/>
         </div>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
-      </div>
-    );
+      )
+    } else {
+      return (<h1>We did it!</h1>)
+    }
   }
 }
 
