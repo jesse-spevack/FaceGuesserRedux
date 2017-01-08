@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import './App.css';
 import CohortSelect from './CohortSelect'
+import Game from './Game'
+import $ from 'jquery'
 
 class App extends Component {
   constructor() {
@@ -9,8 +10,11 @@ class App extends Component {
   }
 
   startGame(cohort) {
-    console.log("Starting game! " + cohort)
-    this.setState({cohort: cohort})
+    $.getJSON('http://localhost:3001/api/v1/users', (people) => {
+      this.setState( { people: people } )
+    }).then(() => {
+      this.setState( { cohort: cohort } )
+    })
   }
 
   render() {
@@ -21,7 +25,9 @@ class App extends Component {
         </div>
       )
     } else {
-      return (<h1>We did it!</h1>)
+      return (
+        <Game people={ this.state.people }/>
+      )
     }
   }
 }
