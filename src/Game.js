@@ -1,10 +1,13 @@
-import                React from 'react';
+import React          from 'react';
 import _              from 'lodash'
+import FeedbackBar    from './FeedbackBar'
 
 class Game extends React.Component {
   constructor(props) {
     super(props)
-    this.state = { person: this.getRandomPerson() };
+    this.state = { person: this.getRandomPerson(),
+                   showFeedback: false,
+                   knownPeople: [] };
   }
 
   componentWillMount() {
@@ -12,10 +15,15 @@ class Game extends React.Component {
     this.setState( { choices: randomFour })
   }
 
-  getRandomPerson() { return _.sample(this.props.people) }
+  getRandomPerson() {
+    let knownPeople = this.state && this.state.knownPeople || []
+    console.log("Known people: " + knownPeople.map((person) => {return person.first_name}).join(", "))
+    let remainingPeople = _.difference(this.props.people, knownPeople)
+    console.log("Remaining people: " + remainingPeople.map((person) => {return person.first_name}).join(", "))
+    return _.sample(remainingPeople)
+  }
 
   getRandomFour(person) {
-    console.log("Person = " + this.state.person.first_name)
     let randomFour = [person];
     while (randomFour.length < 4 ) {
       let person = _.sample(this.props.people)
@@ -23,24 +31,42 @@ class Game extends React.Component {
         randomFour.push(person)
       }
     }
-    console.log("Random 4 = " + randomFour[0].first_name + " " + randomFour[1].first_name + " " + randomFour[2].first_name + " " + randomFour[3].first_name)
     return randomFour;
   }
 
   makeGuess(event) {
     let guess = event.target.text
+    let gameOver = false;
     if ( guess === this.state.person.first_name ) {
       this.props.correct()
+      let knownPeople = this.state.knownPeople
+      knownPeople.push(this.state.person)
+      console.log("known people count: " + knownPeople.length)
+      console.log("people count: " + this.props.people.length)
+      gameOver = knownPeople.length === this.props.people.length
+      console.log("Guess, game over? " + gameOver)
+      this.setState({ correct: true,
+                      showFeedback: true,
+                      knownPeople: knownPeople})
     } else {
       this.props.incorrect()
+      this.setState({correct: false,
+                     person: this.state.person.first_name,
+                     guess: guess,
+                     showFeedback: true})
     }
-    this.nextTurn()
+    this.nextTurn(gameOver)
   }
 
-  nextTurn() {
-    let person = this.getRandomPerson();
-    let randomFour = this.getRandomFour(person);
-    this.setState({ person: person, choices: randomFour })
+  nextTurn(gameOver) {
+    if(gameOver){
+      console.log("GAME OVER!")
+      this.props.gameOver()
+    } else {
+      let person = this.getRandomPerson();
+      let randomFour = _.shuffle(this.getRandomFour(person));
+      this.setState({ person: person, choices: randomFour })
+    }
   }
 
 
@@ -56,8 +82,15 @@ class Game extends React.Component {
         </div>
       )
     })
+
+
+
     return (
       <div>
+        <FeedbackBar  correct={this.state.correct}
+                      guess={this.state.guess}
+                      person={this.state.person.first_name}
+                      show={this.state.showFeedback} />
         <div className="container">
           <div className="col-md-6">
             <img src={this.state.person.image_url} />
