@@ -11,15 +11,16 @@ class App extends React.Component {
   }
 
   startGame(cohort) {
+    console.log(cohort)
     axios({
       method: 'post',
-      url: 'http://localhost:3001/oauth/token',
+      url: 'https://turing-census.herokuapp.com/oauth/token',
       params: {
         'grant_type': 'client_credentials',
       },
       auth: {
-        username: 'da44cc24c364f64ba14804a55793b2ae7bd1d39604e615d72ea6a36bf50f1959',
-        password: 'f0676d6cb0e4afe8c4f66fd791cfbcfa256d35949d61c6883d0ea516f356f3aa'
+        username: '',
+        password:
       },
       crossDomain: true,
       header: {
@@ -28,20 +29,28 @@ class App extends React.Component {
       }
     })
     .then((response) => {
+      console.log(response)
       return axios({
         method: 'get',
-        url: 'http://localhost:3001/api/v1/users',
+        // local
+        // url: 'http://localhost:3001/api/v1/users',
+        // staging
+        url: 'https://turing-census.herokuapp.com/api/v1/users',
         headers: {
-          "Authorization": response.data.access_token
+          "Authorization": "Bearer " + response.data.access_token
         }
       })
     })
     .then((response) => {
+      console.log("People from census: ")
+      console.log(response.data)
       return _.filter(response.data, (person) => {
         return person.cohort === cohort;
       })
     })
     .then((peopleFromCohort) => {
+      console.log("People from cohort: ")
+      console.log(peopleFromCohort)
       this.setState( { people: peopleFromCohort, cohort: cohort })
     });
   }

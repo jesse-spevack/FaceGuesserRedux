@@ -93,8 +93,11 @@ class Game extends React.Component {
                       show={this.state.showFeedback} />
         <div className="container">
           <div className="col-md-6">
-            <img src={this.state.person.image_url} />
-            <p>{this.state.person.first_name}</p>
+            {
+              !this.state.person.image_url.includes("missing") &&
+              <img className="center-block" src={this.state.person.image_url} />
+            }
+            <p className="text-center"><strong>Secret answer:</strong> {this.state.person.first_name}</p>
           </div>
           <div className="col-md-6">
             {choices}
