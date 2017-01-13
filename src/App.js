@@ -19,8 +19,10 @@ class App extends React.Component {
         'grant_type': 'client_credentials',
       },
       auth: {
-        username: process.env.username,
-        password: process.env.password
+        // username: process.env.username,
+        // password: process.env.password
+        username: 'e2d43bb6ecec1ecd2c3b8839f6666c56574b7a0aa9b0bf33b1b8f24d65ec7f1d',
+        password: 'bdd1efb6b4909062c5f7c24bed659f081b18d110f5505414bae3548831b6de54'
       },
       crossDomain: true,
       header: {
